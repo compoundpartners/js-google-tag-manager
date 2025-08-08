@@ -5,6 +5,7 @@ from __future__ import unicode_literals
 from django.conf import settings
 from django.template import Library
 from django.utils.safestring import mark_safe
+from html import unescape
 
 register = Library()
 
@@ -23,7 +24,7 @@ def data_layer(**kwargs):
     for key, value in kwargs.items():
         if value:
             value = '%s' % value
-            data.append("'%s': '%s'" % (key.replace('_', '-'), value.replace('&amp;', '&')))
+            data.append("'%s': '%s'" % (key.replace('_', '-'), unescape(value).replace("'", "\\'")))
     return mark_safe('''<script>
     var dataLayer = window.dataLayer = window.dataLayer || [];
     dataLayer.push({
