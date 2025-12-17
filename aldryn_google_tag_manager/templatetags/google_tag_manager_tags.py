@@ -20,17 +20,20 @@ def google_tag_manager(*args, **kwargs):
 
 @register.simple_tag
 def data_layer(**kwargs):
+    nonce = kwargs.pop('csp_nonce', '')
+    if nonce:
+        nonce = f' nonce="{nonce}"'
     data = []
     for key, value in kwargs.items():
         if value:
             value = '%s' % value
             data.append("'%s': '%s'" % (key.replace('_', '-'), unescape(value).replace("'", "\\'")))
-    return mark_safe('''<script>
+    return mark_safe('''<script%s>
     var dataLayer = window.dataLayer = window.dataLayer || [];
     dataLayer.push({
         %s
     });
-  </script>''' % ', '.join(data))
+  </script>''' % (nonce, ', '.join(data)))
 
 @register.simple_tag
 def to_list_if_exists(*args):
